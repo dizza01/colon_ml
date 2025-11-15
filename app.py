@@ -1,5 +1,5 @@
 """
-Enhanced Colon Polyp Detection and Explainability App
+Colon Polyp Detection and Explainability App
 =====================================================
 
 Complete implementation with working prediction and explanation pipeline

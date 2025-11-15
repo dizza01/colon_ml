@@ -156,6 +156,8 @@ venv.bak/
 
 /data
 
+/aws_setup
+
 # mypy
 .mypy_cache/
 .dmypy.json
