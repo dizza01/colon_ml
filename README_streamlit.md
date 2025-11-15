@@ -1,6 +1,6 @@
 # 🔬 Colon Polyp Detection & Explainability Platform
 
-An interactive Streamlit web application for colon polyp detection using deep learning with comprehensive explainable AI features.
+An interactive Streamlit web application for colon polyp detection using deep learning with explainable AI features.
 
 ## 🎯 Overview
 
@@ -17,7 +17,7 @@ This application demonstrates an end-to-end machine learning pipeline for medica
 - Upload colonoscopy images for analysis
 - Real-time segmentation with confidence scores
 - Adjustable detection thresholds
-- Comprehensive visualization of results
+- Visualization of results
 
 ### 🧠 Explainability Methods
 - **Integrated Gradients**: Most focused attribution method
@@ -114,7 +114,7 @@ colon_ml/
 ### 4. 📊 Model Overview
 - **Architecture Details**: U-Net model specifications
 - **Training Configuration**: Hyperparameters and dataset info
-- **Performance Summary**: Comprehensive metrics overview
+- **Performance Summary**: Metrics overview
 
 ### 5. 📈 Model Evaluation
 - **Performance Metrics**: Dice score, accuracy, sensitivity, specificity
@@ -204,7 +204,7 @@ CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0
 
 This project demonstrates the application of explainable AI to medical image analysis. Key research contributions include:
 
-1. **Comprehensive XAI Evaluation**: Multiple explanation methods with quantitative assessment
+1. **XAI Evaluation**: Multiple explanation methods with quantitative assessment
 2. **Medical Domain Application**: Real-world relevance to gastroenterology
 3. **Interactive Platform**: Accessible interface for medical professionals
 4. **Reproducible Pipeline**: Complete end-to-end workflow

@@ -243,7 +243,7 @@ if page == "🏠 Home":
     1. **📊 Model Overview**: Learn about the U-Net architecture and training process
     2. **🔍 Live Detection**: Upload your own images for analysis
     3. **🧠 Explainability**: Explore different explanation methods
-    4. **📈 Evaluation**: See comprehensive performance metrics
+    4. **📈 Evaluation**: See performance metrics
     """)
     
     # Model statistics
@@ -394,7 +394,7 @@ elif page == "🧠 Explainability Analysis":
         """)
 
 elif page == "📈 Model Evaluation":
-    st.markdown('<div class="section-header">Comprehensive Performance Analysis</div>', 
+    st.markdown('<div class="section-header">Performance Analysis</div>', 
                 unsafe_allow_html=True)
     
     # Performance metrics
@@ -439,7 +439,7 @@ elif page == "📚 About & Research":
     ### 📖 Key Components:
     
     1. **U-Net Segmentation**: State-of-the-art architecture for medical image segmentation
-    2. **Multiple Explanation Methods**: Comprehensive analysis using different XAI techniques
+    2. **Multiple Explanation Methods**: Analysis using different XAI techniques
     3. **Quantitative Evaluation**: Rigorous assessment using metrics from the Quantus library
     4. **Medical Relevance**: Real-world application in gastroenterology
     

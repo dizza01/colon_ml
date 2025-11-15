@@ -6,7 +6,7 @@
 - [ ] `app.py` - Main Streamlit application with full UI
 - [ ] `utils.py` - Utility functions and model definitions  
 - [ ] `streamlit_requirements.txt` - Python dependencies
-- [ ] `README_streamlit.md` - Comprehensive documentation
+- [ ] `README_streamlit.md` -  documentation
 
 ### Setup & Launch Scripts
 - [ ] `setup.sh` - Full environment setup (creates venv, installs deps)
@@ -88,7 +88,7 @@ streamlit run app.py
 - [x] Multiple explainability methods
 - [x] Quantitative evaluation metrics
 - [x] Interactive parameter adjustment
-- [x] Comprehensive documentation
+- [x] Documentation
 
 ### 🔧 Technical Implementation
 - [x] U-Net model architecture
@@ -106,7 +106,7 @@ streamlit run app.py
 2. **🔍 Live Detection**: Upload images, run analysis, view results
 3. **🧠 Explainability**: Learn about and compare explanation methods
 4. **📊 Model Overview**: Architecture details and training configuration
-5. **📈 Evaluation**: Comprehensive performance and explanation metrics
+5. **📈 Evaluation**: Performance and explanation metrics
 6. **📚 About**: Research background and technical documentation
 
 ## 💡 Publishing Strategy Recommendations

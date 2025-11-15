@@ -103,7 +103,7 @@ for i in sample_indices:
 
 **Function**: `calculate_validation_metrics()` in `utils.py`
 - Processes multiple samples at once (10-100)
-- Calculates comprehensive statistics (mean ± std)
+- Calculates statistics (mean ± std)
 - Shows performance distribution histograms
 - **Better than notebook**: Aggregated analysis with visual distributions
 
@@ -147,7 +147,7 @@ streamlit run app.py
 - **Real-time metrics**: Instant Dice/IoU/Accuracy calculation
 - **Multiple analysis modes**: Individual, batch, and explainability
 - **Better UI**: Clean layouts with organized sections
-- **Comprehensive testing**: Full test suite ensures reliability
+- **Testing**: Full test suite ensures reliability
 - **Export ready**: Built-in functionality for saving results
 
 ### 🚀 Enhanced Features Not in Notebook:
@@ -155,7 +155,7 @@ streamlit run app.py
 - **Explainability quality analysis** (overlap with ground truth)
 - **Interactive sample selection** (random or specific index)
 - **Real-time model loading status**
-- **Comprehensive error handling**
+- **Error handling**
 - **Performance optimization** for large datasets
 
 ---

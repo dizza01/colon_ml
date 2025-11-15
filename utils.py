@@ -347,7 +347,7 @@ def evaluate_explanations(explanations, input_np, model, device):
     return results
 
 def create_visualization(image_rgb, prediction, explanations, binary_mask=None):
-    """Create comprehensive visualization of results"""
+    """Create  visualization of results"""
     n_methods = len(explanations)
     if n_methods == 0:
         return None
@@ -534,7 +534,7 @@ def create_explainability_comparison(image, ground_truth_mask, explanations):
 
 def calculate_validation_metrics(predictions, ground_truths):
     """
-    Calculate comprehensive metrics for validation dataset
+    Calculate metrics for validation dataset
     
     Args:
         predictions: Array of prediction probabilities

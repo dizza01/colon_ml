@@ -430,7 +430,7 @@ elif page == "🧠 Explainability Analysis":
     st.dataframe(df, width='stretch')
 
 elif page == "📈 Model Evaluation":
-    st.markdown('<div class="section-header">Comprehensive Performance Analysis</div>', 
+    st.markdown('<div class="section-header">  Performance Analysis</div>', 
                 unsafe_allow_html=True)
     
     # Performance metrics
@@ -668,7 +668,7 @@ elif page == "� Validation Comparison":
                         all_predictions.append(prediction_prob)
                         all_ground_truths.append(ground_truth)
                     
-                    # Calculate comprehensive metrics
+                    # Calculate metrics
                     val_metrics = calculate_validation_metrics(
                         np.array(all_predictions), np.array(all_ground_truths)
                     )
