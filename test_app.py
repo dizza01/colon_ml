@@ -26,7 +26,10 @@ import warnings
 from utils import (
     UNet, double_conv, BatchedScalarModel, 
     preprocess_image, predict_segmentation, generate_explanations,
-    tensor_to_numpy_img, calculate_metrics, evaluate_explanations
+    tensor_to_numpy_img, calculate_metrics, evaluate_explanations,
+    load_validation_data, sample_validation_images,
+    create_comparison_visualization, create_explainability_comparison,
+    calculate_validation_metrics
 )
 
 class TestUNetArchitecture(unittest.TestCase):
@@ -350,6 +353,176 @@ class TestAppIntegration(unittest.TestCase):
         except Exception as e:
             self.fail(f"End-to-end pipeline failed: {e}")
 
+
+class TestValidationFunctionality(unittest.TestCase):
+    """Test validation dataset functionality"""
+    
+    def setUp(self):
+        """Set up test fixtures for validation tests"""
+        self.device = torch.device('cpu')
+        
+    def test_validation_data_loading(self):
+        """Test validation data loading functionality"""
+        try:
+            from utils import load_validation_data
+            X_val, y_val, available = load_validation_data()
+            
+            if available:
+                print("✅ Validation data is available for testing")
+                self.assertIsInstance(X_val, torch.Tensor, "X_val should be a tensor")
+                self.assertIsInstance(y_val, torch.Tensor, "y_val should be a tensor")
+                self.assertEqual(len(X_val.shape), 4, "X_val should be 4D (N,C,H,W)")
+                self.assertEqual(len(y_val.shape), 4, "y_val should be 4D (N,C,H,W)")
+                self.assertEqual(X_val.shape[1], 3, "X_val should have 3 channels")
+                self.assertEqual(y_val.shape[1], 1, "y_val should have 1 channel")
+                print(f"   📊 Validation dataset shape: X={X_val.shape}, y={y_val.shape}")
+            else:
+                print("⚠️ Validation data not available - skipping validation tests")
+                self.skipTest("Validation data not available")
+                
+        except ImportError as e:
+            self.fail(f"Could not import validation functions: {e}")
+    
+    def test_validation_sampling(self):
+        """Test validation dataset sampling functionality"""
+        try:
+            from utils import load_validation_data, sample_validation_images
+            X_val, y_val, available = load_validation_data()
+            
+            if not available:
+                self.skipTest("Validation data not available")
+                
+            # Test sampling
+            n_samples = min(5, len(X_val))
+            sampled_X, sampled_y, indices = sample_validation_images(X_val, y_val, n_samples)
+            
+            self.assertEqual(len(sampled_X), n_samples, "Should return requested number of samples")
+            self.assertEqual(len(sampled_y), n_samples, "Should return same number of X and y samples")
+            self.assertEqual(len(indices), n_samples, "Should return same number of indices")
+            self.assertTrue(all(0 <= idx < len(X_val) for idx in indices), "Indices should be valid")
+            
+            print(f"✅ Validation sampling works: {n_samples} samples selected")
+            
+        except ImportError as e:
+            self.fail(f"Could not import validation functions: {e}")
+    
+    def test_comparison_visualization(self):
+        """Test validation comparison visualization creation"""
+        try:
+            from utils import create_comparison_visualization
+            
+            # Create dummy data
+            image = np.random.rand(256, 256, 3)
+            ground_truth = np.random.randint(0, 2, (256, 256))
+            prediction = np.random.rand(256, 256)
+            
+            # Test 3-panel visualization
+            fig = create_comparison_visualization(image, ground_truth, prediction)
+            self.assertIsNotNone(fig, "Should create a matplotlib figure")
+            
+            # Test 4-panel visualization with probabilities
+            fig_with_prob = create_comparison_visualization(image, ground_truth, prediction, prediction)
+            self.assertIsNotNone(fig_with_prob, "Should create figure with probabilities")
+            
+            print("✅ Comparison visualization creation works")
+            
+        except ImportError as e:
+            self.fail(f"Could not import visualization functions: {e}")
+    
+    def test_explainability_comparison(self):
+        """Test explainability comparison visualization"""
+        try:
+            from utils import create_explainability_comparison
+            
+            # Create dummy data
+            image = np.random.rand(256, 256, 3)
+            ground_truth = np.random.randint(0, 2, (256, 256))
+            
+            # Create dummy explanations
+            explanations = {
+                'Method1': np.random.rand(1, 3, 256, 256),
+                'Method2': np.random.rand(1, 1, 256, 256),
+            }
+            
+            fig = create_explainability_comparison(image, ground_truth, explanations)
+            self.assertIsNotNone(fig, "Should create explainability comparison figure")
+            
+            print("✅ Explainability comparison visualization works")
+            
+        except ImportError as e:
+            self.fail(f"Could not import explainability functions: {e}")
+    
+    def test_validation_metrics_calculation(self):
+        """Test validation metrics calculation"""
+        try:
+            from utils import calculate_validation_metrics
+            
+            # Create dummy validation data
+            n_samples = 10
+            predictions = np.random.rand(n_samples, 256, 256)
+            ground_truths = np.random.randint(0, 2, (n_samples, 256, 256))
+            
+            metrics = calculate_validation_metrics(predictions, ground_truths)
+            
+            # Check that all expected metrics are present
+            expected_keys = ['mean_dice', 'std_dice', 'mean_iou', 'std_iou', 
+                           'mean_accuracy', 'std_accuracy', 'individual_dice', 
+                           'individual_iou', 'individual_accuracy']
+            
+            for key in expected_keys:
+                self.assertIn(key, metrics, f"Metrics should contain {key}")
+            
+            # Check value ranges
+            self.assertTrue(0 <= metrics['mean_dice'] <= 1, "Dice should be in [0,1]")
+            self.assertTrue(0 <= metrics['mean_iou'] <= 1, "IoU should be in [0,1]")
+            self.assertTrue(0 <= metrics['mean_accuracy'] <= 1, "Accuracy should be in [0,1]")
+            
+            # Check individual metrics
+            self.assertEqual(len(metrics['individual_dice']), n_samples, "Should have per-sample dice scores")
+            
+            print("✅ Validation metrics calculation works")
+            
+        except ImportError as e:
+            self.fail(f"Could not import metrics functions: {e}")
+    
+    def test_end_to_end_validation_pipeline(self):
+        """Test end-to-end validation pipeline"""
+        try:
+            from utils import (load_validation_data, sample_validation_images, 
+                             predict_segmentation, calculate_metrics, UNet)
+            
+            X_val, y_val, available = load_validation_data()
+            
+            if not available:
+                self.skipTest("Validation data not available")
+            
+            # Create a simple model for testing
+            model = UNet(n_class=1)
+            model.eval()
+            
+            # Sample one image
+            sampled_X, sampled_y, indices = sample_validation_images(X_val, y_val, 1)
+            
+            # Run prediction
+            image_tensor = sampled_X[0].unsqueeze(0).to(self.device)
+            ground_truth = sampled_y[0].squeeze(0).cpu().numpy()
+            
+            with torch.no_grad():
+                prediction, binary_mask = predict_segmentation(model, image_tensor, self.device)
+            
+            # Calculate metrics
+            metrics = calculate_metrics(prediction, torch.tensor(ground_truth).unsqueeze(0).unsqueeze(0))
+            
+            # Verify metrics are calculated
+            self.assertIn('dice_score', metrics, "Should calculate Dice score")
+            self.assertIn('iou', metrics, "Should calculate IoU")
+            self.assertIn('pixel_accuracy', metrics, "Should calculate pixel accuracy")
+            
+            print("✅ End-to-end validation pipeline works")
+            print(f"   📊 Sample metrics: Dice={metrics['dice_score']:.3f}, IoU={metrics['iou']:.3f}")
+            
+        except ImportError as e:
+            self.fail(f"Could not import validation pipeline functions: {e}")
 
 def run_tests():
     """Run all tests"""
