@@ -2,6 +2,14 @@
 
 An interactive Streamlit web application for colon polyp detection using deep learning with explainable AI features.
 
+## 🎯 venv and requirements 
+"""
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+"""
+
 ## 🎯 Overview
 
 This application demonstrates an end-to-end machine learning pipeline for medical image analysis, specifically focused on colon polyp detection with explainable AI. It includes:
