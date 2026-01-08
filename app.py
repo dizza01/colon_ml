@@ -385,7 +385,7 @@ elif page == "🔍 Live Detection":
                             st.metric("Max Confidence", f"{metrics['max_confidence']:.3f}")
                         
                         with col2:
-                            st.metric("Mean Confidence", f"{metrics['mean_confidence']:.3f}")
+                            st.metric("Mean Prediction", f"{metrics['mean_prediction']:.3f}")
                         
                         with col3:
                             st.metric("Polyp Area %", f"{metrics['polyp_area_percentage']:.1f}%")
@@ -605,7 +605,8 @@ elif page == "🔍 Live Detection":
                                 
                                 if 'entropy' in uncertainty_results and 'tta' in uncertainty_results:
                                     # Both methods available - use average
-                                    raw_entropy = uncertainty_results['entropy']
+                                    entropy_result = uncertainty_results['entropy']
+                                    raw_entropy = entropy_result.get('uncertainty_score', entropy_result)
                                     normalized_entropy = min(raw_entropy / 0.693, 1.0)
                                     
                                     tta_uncertainty = uncertainty_results['tta']['uncertainty_score']
@@ -621,7 +622,8 @@ elif page == "🔍 Live Detection":
                                     }
                                 elif 'entropy' in uncertainty_results:
                                     # Only entropy available
-                                    raw_entropy = uncertainty_results['entropy']
+                                    entropy_result = uncertainty_results['entropy']
+                                    raw_entropy = entropy_result.get('uncertainty_score', entropy_result)
                                     normalized_entropy = min(raw_entropy / 0.693, 1.0)
                                     overall_uncertainty = normalized_entropy
                                     debug_info['entropy'] = {
@@ -662,10 +664,14 @@ elif page == "🔍 Live Detection":
                                 col_idx = 1
                                 if 'entropy' in uncertainty_results:
                                     with uncertainty_cols[col_idx]:
+                                        # Show normalized entropy (0-1 scale) instead of raw entropy
+                                        entropy_result = uncertainty_results['entropy']
+                                        raw_entropy = entropy_result.get('uncertainty_score', entropy_result)
+                                        normalized_entropy = min(raw_entropy / 0.693, 1.0)
                                         st.metric(
                                             "Entropy Uncertainty", 
-                                            f"{uncertainty_results['entropy']:.4f}",
-                                            help="Lower values indicate more confident predictions"
+                                            f"{normalized_entropy:.4f}",
+                                            help="Normalized uncertainty: 0=certain, 1=maximally uncertain"
                                         )
                                     col_idx += 1
                                 
@@ -684,10 +690,13 @@ elif page == "🔍 Live Detection":
                                     # Show visualizations for each method
                                     for method, result in uncertainty_results.items():
                                         if method == 'entropy':
-                                            # For entropy, create a simple visualization with the prediction
+                                            # For entropy, use the entropy map for visualization
+                                            entropy_map = result.get('uncertainty_map')
+                                            entropy_score = result.get('uncertainty_score', result)
+                                            
                                             fig = create_uncertainty_visualization(
-                                                image_rgb, model_prediction, None,  # No uncertainty map for entropy
-                                                result, result, method_name="Entropy-Based Uncertainty"
+                                                image_rgb, model_prediction, entropy_map,
+                                                entropy_score, entropy_score, method_name="Entropy-Based Uncertainty"
                                             )
                                             if fig is not None:
                                                 st.pyplot(fig)
@@ -697,10 +706,14 @@ elif page == "🔍 Live Detection":
                                             uncertainty_map_2d = np.squeeze(result['uncertainty_map'])
                                             mean_pred_2d = np.squeeze(result['mean_prediction'])
                                             
+                                            # Get entropy uncertainty score if available
+                                            entropy_result = uncertainty_results.get('entropy', {})
+                                            entropy_score = entropy_result.get('uncertainty_score', result['uncertainty_score'])
+                                            
                                             fig = create_uncertainty_visualization(
                                                 image_rgb, mean_pred_2d, uncertainty_map_2d,
                                                 result['uncertainty_score'], 
-                                                uncertainty_results.get('entropy', result['uncertainty_score']),
+                                                entropy_score,
                                                 method_name="Test-Time Augmentation Uncertainty"
                                             )
                                             if fig is not None:

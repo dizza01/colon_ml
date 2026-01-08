@@ -288,12 +288,20 @@ def generate_explanations(model, input_tensor, device):
     return explanations
 
 def calculate_metrics(prediction, ground_truth=None):
-    """Calculate various performance metrics"""
+    """Calculate various performance metrics
+    
+    Args:
+        prediction: Model output tensor with probabilities [0,1]
+        ground_truth: Optional ground truth for validation metrics
+    
+    Returns:
+        dict: Metrics including mean_prediction (avg probability), max_confidence, etc.
+    """
     metrics = {}
     
     # Basic prediction stats
     pred_np = prediction.detach().cpu().numpy()
-    metrics['mean_confidence'] = np.mean(pred_np)
+    metrics['mean_prediction'] = np.mean(pred_np)  # Average probability across all pixels
     metrics['max_confidence'] = np.max(pred_np)
     metrics['polyp_area_percentage'] = np.mean(pred_np > 0.5) * 100
     
@@ -1111,7 +1119,9 @@ def calculate_entropy_uncertainty(prediction):
         prediction (np.ndarray): Model prediction with values between 0 and 1
         
     Returns:
-        float: Entropy uncertainty score (higher = more uncertain)
+        dict: Dictionary containing:
+            - 'uncertainty_score': Mean entropy uncertainty score (higher = more uncertain)
+            - 'uncertainty_map': Pixel-wise entropy map for visualization
     """
     try:
         # Ensure prediction is in valid range
@@ -1130,10 +1140,16 @@ def calculate_entropy_uncertainty(prediction):
         print(f"- Mean entropy: {mean_entropy:.4f}")
         print(f"- Max possible entropy (ln(2)): {np.log(2):.4f}")
         
-        return mean_entropy
+        return {
+            'uncertainty_score': mean_entropy,
+            'uncertainty_map': entropy
+        }
     except Exception as e:
         print(f"Error calculating entropy uncertainty: {str(e)}")
-        return 0.1  # Return reasonable default instead of 0.0
+        return {
+            'uncertainty_score': 0.1,
+            'uncertainty_map': None
+        }
 
 
 def test_time_augmentation_uncertainty(model, image, device, num_augmentations=5):
